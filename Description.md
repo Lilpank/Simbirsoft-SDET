@@ -1,7 +1,7 @@
 Simbirsoft-SDET practice проект UI-автотест
 
 Тестируемая форма
-![img.png](pictures%2Fimg.png)
+![img.png](reporting%20pictures%2Fimg.png)
 
 В проекте использовался паттерн Page Object Model.
 Его основные преимущества:

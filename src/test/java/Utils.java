@@ -1,4 +1,3 @@
-import org.example.helpers.RegistrationForm;
 import org.example.helpers.SubmittedForm;
 import org.example.pages.RegistrationPage;
 import org.openqa.selenium.By;
