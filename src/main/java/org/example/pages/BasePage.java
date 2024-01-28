@@ -25,6 +25,11 @@ public class BasePage implements IBasePage {
         executor.executeScript("arguments[0].scrollIntoView();", webElement);
     }
 
+    private void waitForVisibilityOfElementLocated(By locator) {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+    }
+
+
     @Override
     public void clickJS(WebElement webElement) {
         waitForVisibilityOfElement(webElement);
@@ -46,14 +51,20 @@ public class BasePage implements IBasePage {
 
     @Override
     public WebElement findElement(By locator) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+        waitForVisibilityOfElementLocated(locator);
         return driver.findElement(locator);
     }
 
 
     @Override
     public List<WebElement> findElements(By locator) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+        waitForVisibilityOfElementLocated(locator);
         return driver.findElements(locator);
+    }
+
+    @Override
+    public void submit(WebElement webElement) {
+        waitForVisibilityOfElement(webElement);
+        webElement.submit();
     }
 }

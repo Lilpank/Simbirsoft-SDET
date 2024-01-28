@@ -1,4 +1,4 @@
-import org.example.helpers.SubmittedForm;
+import org.example.helpers.SubmittedRegistrationForm;
 import org.example.pages.RegistrationPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -16,14 +16,14 @@ public class Utils {
         return s[2] + " " + month + "," + s[5];
     }
 
-    protected static SubmittedForm submittedForm(RegistrationPage formPage) {
+    protected static SubmittedRegistrationForm submittedForm(RegistrationPage formPage) {
         List<WebElement> table = formPage.findElements(By.xpath("//table[@class='table table-dark table-striped table-bordered table-hover']/tbody/tr"));
         HashMap<String, String> submitted_data = new HashMap<>();
 
         for (WebElement t : table) {
             submitted_data.put(t.findElement(By.xpath("./td[1]")).getText(), t.findElement(By.xpath("./td[2]")).getText());
         }
-        return new SubmittedForm(
+        return new SubmittedRegistrationForm(
                 submitted_data.get("Student Name"),
                 submitted_data.get("Student Email"),
                 submitted_data.get("Gender"),

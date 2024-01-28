@@ -3,25 +3,23 @@ import io.qameta.allure.Link;
 import io.qameta.allure.Step;
 import org.example.helpers.Helper;
 import org.example.helpers.RegistrationForm;
-import org.example.helpers.SubmittedForm;
+import org.example.helpers.SubmittedRegistrationForm;
 import org.example.pages.RegistrationPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
-import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 public class TestFormPage {
     private WebDriver driver;
     private RegistrationPage formPage;
     private final String titleThankForSubmittingTheForm = "Thanks for submitting the form";
-    private final String pathToImagesDirectory = "{your path to picture}";
+    private final String pathToImagesDirectory = "C:\\Users\\Даниил\\IdeaProjects\\Simbirsoft-SDET\\Simbisoft-SDET\\src\\main\\resources\\uploadPictures\\";
 
     @BeforeTest
     public void setUp() {
@@ -29,64 +27,22 @@ public class TestFormPage {
     }
 
     @Test
-    @Description("Тест проверяет страницу регистрации отправляя всю форму")
+    @Description("Тест проверяет страницу регистрации генерируя данные и отправляя всю форму")
     @Link(name = "Registration", url = "https://demoqa.com/automation-practice-form")
     public void testFullForm() {
-        driver = new ChromeDriver();
-        driver.get("https://demoqa.com/automation-practice-form");
-        formPage = new RegistrationPage(driver);
-
-        try {
-            Calendar calendar1 = new GregorianCalendar(2005, 10, 11);
-            RegistrationForm registration = new RegistrationForm(
-                    "Dora",
-                    "Sergeevna",
-                    "name@example.com",
-                    "7912312312",
-                    calendar1,
-                    Helper.getRandomSubject(),
-                    (pathToImagesDirectory + "img.png"),
-                    "Samara"
-            );
-            formPage.sendAll(registration);
-            formPage.submit(formPage.getSubmit());
-
-            SubmittedForm submittedForm = Utils.submittedForm(formPage);
-            testTitle(formPage.findElement(By.id("example-modal-sizes-title-lg")).getText());
-            testName(registration.getFirst_name() + " " + registration.getLast_name(), submittedForm.student_name());
-            testEmail(submittedForm.email(), registration.getEmail());
-            testGender(submittedForm.gender(), Helper.genders.get(registration.getGender_index()));
-            testPhone(submittedForm.mobile(), registration.getUser_number());
-            testBirthday(submittedForm.date_of_birth(), Utils.converterDateFromCalendar(registration.getDate_of_birth()));
-            testSubject(submittedForm.subjects(), registration.getSubject());
-            testHobbies(submittedForm.hobbies(), Helper.hobbies.get(registration.getHobbies_index()));
-            testPicture(submittedForm.picture(), registration.getPath_picture().substring(pathToImagesDirectory.length()));
-            testCurrentAddress(submittedForm.address(), registration.getCurrent_address());
-            testStateAndCity(submittedForm.state_and_city(), Helper.states_and_cities.get(registration.getState_index()).get(registration.getCity_index()));
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        driver.quit();
-    }
-
-    @Test
-    @Description("Тест проверяет поля first_name и last_name")
-    @Link(name = "Registration", url = "https://demoqa.com/automation-practice-form")
-    public void testNames() {
         List<String> names = NameGenerator.generateFullName();
         for (var name : names) {
-            String[] fullname = name.split(" ");
+            String[] fullName = name.split(" ");
             try {
                 driver = new ChromeDriver();
                 driver.get("https://demoqa.com/automation-practice-form");
                 formPage = new RegistrationPage(driver);
-
-                Calendar calendar1 = new GregorianCalendar(2005, 10, 11);
+                Calendar calendar1 = DateOfBirthGenerator.getCalendar();
                 RegistrationForm registration = new RegistrationForm(
-                        fullname[0],
-                        fullname[1],
+                        fullName[0],
+                        fullName[1],
                         "name@example.com",
-                        "7912312312",
+                        PhoneGenerator.generatePhone(),
                         calendar1,
                         Helper.getRandomSubject(),
                         (pathToImagesDirectory + "img.png"),
@@ -95,16 +51,25 @@ public class TestFormPage {
                 formPage.sendAll(registration);
                 formPage.submit(formPage.getSubmit());
 
-                SubmittedForm submittedForm = Utils.submittedForm(formPage);
+                SubmittedRegistrationForm submittedForm = Utils.submittedForm(formPage);
                 testTitle(formPage.findElement(By.id("example-modal-sizes-title-lg")).getText());
                 testName(registration.getFirst_name() + " " + registration.getLast_name(), submittedForm.student_name());
+                testEmail(submittedForm.email(), registration.getEmail());
+                testGender(submittedForm.gender(), Helper.genders.get(registration.getGender_index()));
+                testPhone(submittedForm.mobile(), registration.getUser_number());
+                testBirthday(submittedForm.date_of_birth(), Utils.converterDateFromCalendar(registration.getDate_of_birth()));
+                testSubject(submittedForm.subjects(), registration.getSubject());
+                testHobbies(submittedForm.hobbies(), Helper.hobbies.get(registration.getHobbies_index()));
+                Assert.assertEquals(submittedForm.picture(), registration.getPath_picture().substring(pathToImagesDirectory.length()));
+                testPicture(submittedForm.picture(), registration.getPath_picture().substring(pathToImagesDirectory.length()));
+                testCurrentAddress(submittedForm.address(), registration.getCurrent_address());
+                testStateAndCity(submittedForm.state_and_city(), Helper.states_and_cities.get(registration.getState_index()).get(registration.getCity_index()));
                 driver.quit();
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.err.println(e.getMessage());
             }
         }
     }
-
 
     @Step("Title")
     public void testTitle(String formTitle) {
@@ -159,10 +124,5 @@ public class TestFormPage {
     @Step("State and city")
     public void testStateAndCity(String submittedStateAndCity, String registrationStateAndCity) {
         Assert.assertEquals(submittedStateAndCity, registrationStateAndCity);
-    }
-
-    @AfterTest
-    public void tearDown() {
-        driver.quit();
     }
 }
