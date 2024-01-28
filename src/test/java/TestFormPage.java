@@ -19,7 +19,7 @@ public class TestFormPage {
     private WebDriver driver;
     private RegistrationPage formPage;
     private final String titleThankForSubmittingTheForm = "Thanks for submitting the form";
-    private final String pathToImagesDirectory = "C:\\Users\\Даниил\\IdeaProjects\\Simbirsoft-SDET\\Simbisoft-SDET\\src\\main\\resources\\uploadPictures\\";
+    private final String pathToImagesDirectory = "{your path to picture}";
 
     @BeforeTest
     public void setUp() {
