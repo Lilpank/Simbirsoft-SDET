@@ -23,6 +23,4 @@ public interface IBasePage {
     default void submit(WebElement webElement) {
         webElement.submit();
     }
-
-    void clickWithoutVisible(WebElement webElement);
 }

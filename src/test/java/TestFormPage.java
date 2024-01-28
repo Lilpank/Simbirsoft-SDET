@@ -15,25 +15,27 @@ import org.testng.annotations.Test;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 public class TestFormPage {
     private WebDriver driver;
     private RegistrationPage formPage;
     private final String titleThankForSubmittingTheForm = "Thanks for submitting the form";
-    private final String pathToImagesDirectory = "{your path to image}";
+    private final String pathToImagesDirectory = "{your path to picture}";
 
     @BeforeTest
     public void setUp() {
         System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver-win64/chromedriver.exe");
-        driver = new ChromeDriver();
-        driver.get("https://demoqa.com/automation-practice-form");
-        formPage = new RegistrationPage(driver);
     }
 
     @Test
     @Description("Тест проверяет страницу регистрации отправляя всю форму")
     @Link(name = "Registration", url = "https://demoqa.com/automation-practice-form")
     public void testFullForm() {
+        driver = new ChromeDriver();
+        driver.get("https://demoqa.com/automation-practice-form");
+        formPage = new RegistrationPage(driver);
+
         try {
             Calendar calendar1 = new GregorianCalendar(2005, 10, 11);
             RegistrationForm registration = new RegistrationForm(
@@ -64,7 +66,45 @@ public class TestFormPage {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+        driver.quit();
     }
+
+    @Test
+    @Description("Тест проверяет поля first_name и last_name")
+    @Link(name = "Registration", url = "https://demoqa.com/automation-practice-form")
+    public void testNames() {
+        List<String> names = NameGenerator.generateFullName();
+        for (var name : names) {
+            String[] fullname = name.split(" ");
+            try {
+                driver = new ChromeDriver();
+                driver.get("https://demoqa.com/automation-practice-form");
+                formPage = new RegistrationPage(driver);
+
+                Calendar calendar1 = new GregorianCalendar(2005, 10, 11);
+                RegistrationForm registration = new RegistrationForm(
+                        fullname[0],
+                        fullname[1],
+                        "name@example.com",
+                        "7912312312",
+                        calendar1,
+                        Helper.getRandomSubject(),
+                        (pathToImagesDirectory + "img.png"),
+                        "Samara"
+                );
+                formPage.sendAll(registration);
+                formPage.submit(formPage.getSubmit());
+
+                SubmittedForm submittedForm = Utils.submittedForm(formPage);
+                testTitle(formPage.findElement(By.id("example-modal-sizes-title-lg")).getText());
+                testName(registration.getFirst_name() + " " + registration.getLast_name(), submittedForm.student_name());
+                driver.quit();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
 
     @Step("Title")
     public void testTitle(String formTitle) {

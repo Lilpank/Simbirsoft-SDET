@@ -22,9 +22,9 @@ public class RegistrationPage extends BasePage {
     @FindBy(id = "userEmail")
     private WebElement search_email;
     @FindAll({
-            @FindBy(css = "input#gender-radio-1"),
-            @FindBy(css = "input#gender-radio-2"),
-            @FindBy(css = "input#gender-radio-3")
+            @FindBy(css = "label[for='gender-radio-1']"),
+            @FindBy(css = "label[for='gender-radio-2']"),
+            @FindBy(css = "label[for='gender-radio-3']")
     })
     private List<WebElement> search_gender_radio;
     @FindBy(id = "userNumber")
@@ -34,9 +34,9 @@ public class RegistrationPage extends BasePage {
     @FindBy(css = "input#subjectsInput")
     private WebElement search_subjects;
     @FindAll({
-            @FindBy(css = "input#hobbies-checkbox-1"),
-            @FindBy(css = "input#hobbies-checkbox-2"),
-            @FindBy(css = "input#hobbies-checkbox-3")
+            @FindBy(css = "label[for='hobbies-checkbox-1']"),
+            @FindBy(css = "label[for='hobbies-checkbox-2']"),
+            @FindBy(css = "label[for='hobbies-checkbox-3']")
     })
     private List<WebElement> search_hobbies;
     @FindBy(id = "currentAddress")
@@ -63,23 +63,28 @@ public class RegistrationPage extends BasePage {
         send(getSearch_first_name(), registration.getFirst_name());
         send(getSearch_last_name(), registration.getLast_name());
         send(getSearch_email(), registration.getEmail());
-        clickWithoutVisible(getSearch_gender_radio().get(registration.getGender_index()));
+
+        click(getSearch_gender_radio().get(registration.getGender_index()));
+
         send(getSearch_user_number(), registration.getUser_number());
         clickJS(getSearch_date_of_birth());
         setDate(registration.getDate_of_birth());
         send(getSearch_subjects(), registration.getSubject().substring(0, 1));
-        clickJS(findElement(By.cssSelector(".subjects-auto-complete__menu")).findElement(By.xpath("//div[text()='" + registration.getSubject() + "']")));
-        clickWithoutVisible(getSearch_hobbies().get(registration.getHobbies_index()));
+
+        clickJS(findElement(By.cssSelector(".subjects-auto-complete__menu")));
+        clickJS(findElement(By.xpath("//div[text()='" + registration.getSubject() + "']")));
+
+        click(getSearch_hobbies().get(registration.getHobbies_index()));
         getSearch_upload_picture().sendKeys(registration.getPath_picture());
         send(getSearch_current_address(), registration.getCurrent_address());
 
         click(getSearch_state());
-        clickJS(getSearch_state().findElement(By.id("react-select-3-option-" + registration.getState_index())));
+        clickJS(findElement(By.id("react-select-3-option-" + registration.getState_index())));
         click(getSearch_city());
 
         List<WebElement> elements = findElements(By.xpath("//div[starts-with(@id, 'react-select-4-option-')]"));
         registration.setCity_index(registration.getCity_index() % (elements.size()));
-        clickJS(getSearch_city().findElement(By.id("react-select-4-option-" + registration.getCity_index())));
+        clickJS(findElement(By.id("react-select-4-option-" + registration.getCity_index())));
     }
 
     private void setDate(Calendar date) {

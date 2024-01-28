@@ -33,12 +33,6 @@ public class BasePage implements IBasePage {
     }
 
     @Override
-    public void clickWithoutVisible(WebElement webElement) {
-        JavascriptExecutor executor = (JavascriptExecutor) driver;
-        executor.executeScript("arguments[0].click();", webElement);
-    }
-
-    @Override
     public void click(WebElement webElement) {
         waitForVisibilityOfElement(webElement);
         webElement.click();
@@ -52,12 +46,14 @@ public class BasePage implements IBasePage {
 
     @Override
     public WebElement findElement(By locator) {
-        wait.until(ExpectedConditions.elementToBeClickable(locator));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
         return driver.findElement(locator);
     }
 
+
     @Override
     public List<WebElement> findElements(By locator) {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
         return driver.findElements(locator);
     }
 }
